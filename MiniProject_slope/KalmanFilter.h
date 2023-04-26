@@ -1,4 +1,4 @@
-#include<eigen
+#include<eigen/dense>
 
 class KalmanFilter
 {
@@ -6,6 +6,7 @@ private:
     float g{9.82};
     float frictioncoefficient{0.3196719489154};
     float theta{0.407528515};
+    float DeltaT{0.01};
     VectorXf x{{0},{0},{0}};
     MatrixXf A{ {{1}, {deltaT}, {2*deltaT^2}},
                 {{0}, {1},      {deltaT}  },
@@ -30,9 +31,12 @@ void KalmanFilter::predict(VectorXf current_state)
  Covariance = Covariance + Systemnoise;
 }
 
-void KalmanFilter::update(VectorXf current_state, Vectorxf measurement, MatrixXf S, MatrixXf C)
+void KalmanFilter::update(VectorXf current_state, Vectorxf measurement, MatrixXf W, MatrixXf C)
 {
     R = Covar * C;
+    MatrixXf S = C*Covariance;
+    S = S*C.transpose();
+    S = S+W;
     R = R * S.inverse();
     VectorXf x_measurement_estimate = C*x;
     VectorXf v = measurement - x_measurement_update;
